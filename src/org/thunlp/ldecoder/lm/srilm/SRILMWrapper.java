@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import org.thunlp.ldecoder.lm.NgramLanguageModel;
+import org.thunlp.ldecoder.lm.INgramLanguageModel;
 import org.thunlp.ldecoder.util.LRUCache;
 
-public class SRILMWrapper implements NgramLanguageModel {
+public class SRILMWrapper implements INgramLanguageModel {
 	private int order;
 	private SRILMLanguageModel lm;
 	private SWIGTYPE_p_unsigned_int contextArray;

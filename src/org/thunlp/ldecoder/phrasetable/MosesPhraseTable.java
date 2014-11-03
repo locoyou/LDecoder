@@ -1,4 +1,4 @@
-package org.thunlp.ldecoder.phrasetable.mosesphrasetable;
+package org.thunlp.ldecoder.phrasetable;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -7,12 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.zip.GZIPInputStream;
 
-import org.thunlp.ldecoder.phrasetable.PhrasePair;
-import org.thunlp.ldecoder.phrasetable.PhraseTable;
 
-public class MosesPhraseTable implements PhraseTable{
+public class MosesPhraseTable implements IPhraseTable{
 
-	HashMap<String, ArrayList<PhrasePair>> phraseTable = new HashMap<String, ArrayList<PhrasePair>>();
+	HashMap<String, ArrayList<IPhrasePair>> phraseTable = new HashMap<String, ArrayList<IPhrasePair>>();
 	
 	@Override
 	public void loadTable(String phraseTableFileName) {
@@ -27,9 +25,9 @@ public class MosesPhraseTable implements PhraseTable{
 			String line;
 			while((line = br.readLine()) != null) {
 				String[] tags = line.split(" \\|\\|\\| ");
-				ArrayList<PhrasePair> list = phraseTable.get(tags[0]);
+				ArrayList<IPhrasePair> list = phraseTable.get(tags[0]);
 				if(list == null) {
-					list = new ArrayList<PhrasePair>();
+					list = new ArrayList<IPhrasePair>();
 					phraseTable.put(tags[0], list);
 				}
 				list.add(new MosesPhrasePair(tags));
@@ -42,7 +40,7 @@ public class MosesPhraseTable implements PhraseTable{
 	}
 
 	@Override
-	public ArrayList<PhrasePair> getPhraseRules(String sourcePhrase) {
+	public ArrayList<IPhrasePair> getPhraseRules(String sourcePhrase) {
 		return phraseTable.get(sourcePhrase);
 	}
 

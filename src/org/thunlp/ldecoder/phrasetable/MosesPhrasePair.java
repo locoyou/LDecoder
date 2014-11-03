@@ -1,8 +1,7 @@
-package org.thunlp.ldecoder.phrasetable.mosesphrasetable;
+package org.thunlp.ldecoder.phrasetable;
 
-import org.thunlp.ldecoder.phrasetable.PhrasePair;
 
-public class MosesPhrasePair implements PhrasePair {
+public class MosesPhrasePair implements IPhrasePair {
 	String sourcePhrase, targetPhrase;
 	float[] scores;
 	String wordAlignStr, freqStr;

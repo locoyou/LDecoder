@@ -2,7 +2,7 @@ package org.thunlp.ldecoder.phrasetable;
 
 import java.util.ArrayList;
 
-public interface PhraseTable {
+public interface IPhraseTable {
 	public void loadTable(String phraseTableFileName);
-	public ArrayList<PhrasePair> getPhraseRules(String sourcePhrase);
+	public ArrayList<IPhrasePair> getPhraseRules(String sourcePhrase);
 }

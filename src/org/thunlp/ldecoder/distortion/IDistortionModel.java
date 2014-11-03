@@ -1,6 +1,6 @@
 package org.thunlp.ldecoder.distortion;
 
-public interface DistortionModel {
+public interface IDistortionModel {
 	public void loadModel(String distortionModelFileName);
 	
 	/**

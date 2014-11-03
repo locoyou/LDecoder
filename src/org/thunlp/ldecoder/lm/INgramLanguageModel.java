@@ -2,7 +2,7 @@ package org.thunlp.ldecoder.lm;
 
 import java.util.List;
 
-public interface NgramLanguageModel {
+public interface INgramLanguageModel {
 	
 	String SENT_START = "<s>";
 	String SENT_END = "</s>";

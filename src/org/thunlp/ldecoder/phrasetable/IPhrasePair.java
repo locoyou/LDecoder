@@ -1,5 +1,5 @@
 package org.thunlp.ldecoder.phrasetable;
 
-public interface PhrasePair {
+public interface IPhrasePair {
 	public float[] getScores();
 }

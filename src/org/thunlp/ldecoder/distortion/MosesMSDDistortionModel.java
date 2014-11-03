@@ -1,4 +1,4 @@
-package org.thunlp.ldecoder.distortion.mosesdistortion;
+package org.thunlp.ldecoder.distortion;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -6,9 +6,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.zip.GZIPInputStream;
 
-import org.thunlp.ldecoder.distortion.DistortionModel;
 
-public class MosesMSDDistortionModel implements DistortionModel {
+public class MosesMSDDistortionModel implements IDistortionModel {
 	public final static int DIS_M = 0, DIS_S = 1, DIS_D = 2;
 
 	HashMap<String, MSDDistribution> reorderingTable = new HashMap<String, MSDDistribution>();
