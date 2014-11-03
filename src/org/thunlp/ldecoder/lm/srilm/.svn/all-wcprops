@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/5790/toolbox/srilm-java-wrapper/org/thunlp/lm/srilm
+END
+SRILM.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/5699/toolbox/srilm-java-wrapper/org/thunlp/lm/srilm/SRILM.java
+END
+SRILMJNI.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/5699/toolbox/srilm-java-wrapper/org/thunlp/lm/srilm/SRILMJNI.java
+END
+SRILMWrapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/5790/toolbox/srilm-java-wrapper/org/thunlp/lm/srilm/SRILMWrapper.java
+END
+SRILMLanguageModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/5699/toolbox/srilm-java-wrapper/org/thunlp/lm/srilm/SRILMLanguageModel.java
+END
+SWIGTYPE_p_unsigned_int.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/5699/toolbox/srilm-java-wrapper/org/thunlp/lm/srilm/SWIGTYPE_p_unsigned_int.java
+END
