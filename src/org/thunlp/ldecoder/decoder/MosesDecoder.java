@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import org.thunlp.ldecoder.config.Config;
 import org.thunlp.ldecoder.distortion.IDistortionModel;
 import org.thunlp.ldecoder.distortion.MosesMSDDistortionModel;
-import org.thunlp.ldecoder.lm.srilm.SRILMWrapper;
 import org.thunlp.ldecoder.phrasetable.IPhraseTable;
 import org.thunlp.ldecoder.phrasetable.MosesPhraseTable;
+import org.thunlp.lm.srilm.SRILMWrapper;
 
 public class MosesDecoder implements IDecoder {
 	IPhraseTable phraseTable;
@@ -44,6 +44,17 @@ public class MosesDecoder implements IDecoder {
 		MosesTranslationOptionCollector collector = new MosesTranslationOptionCollector(sourceSentence,
 				phraseTable, distortionModel, lm);
 		collector.createOptions();
+		/*
+		 //fot test
+		for(int i = 0; i < sourceSentenceLength*sourceSentenceLength; i++) {
+			System.out.println(i+"=====");
+			ArrayList<MosesTranslationOption> x = collector.translationOptions.get(i);
+			if(x != null) {
+				System.out.println(x.get(0).phrasePair.toString());
+				System.out.println(x.get(1).phrasePair.toString());
+			}
+		}
+		*/
 		
 		//TODO search
 		MosesCubeSearch search = new MosesCubeSearch();
@@ -73,5 +84,7 @@ public class MosesDecoder implements IDecoder {
 	
 	public static void main(String[] args) {
 		//for test
+		MosesDecoder decoder = new MosesDecoder("");
+		decoder.decode("美国 总统 访问 中国");
 	}
 }

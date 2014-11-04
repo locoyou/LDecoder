@@ -1,12 +1,12 @@
-package org.thunlp.ldecoder.lm.srilm;
+package org.thunlp.lm.srilm;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import org.thunlp.ldecoder.lm.INgramLanguageModel;
 import org.thunlp.ldecoder.util.LRUCache;
+import org.thunlp.lm.INgramLanguageModel;
 
 public class SRILMWrapper implements INgramLanguageModel {
 	private int order;

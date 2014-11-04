@@ -6,7 +6,7 @@
  * the SWIG interface file instead.
  * ----------------------------------------------------------------------------- */
 
-package org.thunlp.ldecoder.lm.srilm;
+package org.thunlp.lm.srilm;
 
 public class SRILMLanguageModel {
   private long swigCPtr;

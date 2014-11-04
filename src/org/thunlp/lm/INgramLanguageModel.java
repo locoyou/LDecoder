@@ -1,4 +1,4 @@
-package org.thunlp.ldecoder.lm;
+package org.thunlp.lm;
 
 import java.util.List;
 

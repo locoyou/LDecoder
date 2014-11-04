@@ -2,7 +2,7 @@ package org.thunlp.ldecoder.phrasetable;
 
 import org.thunlp.ldecoder.config.Config;
 import org.thunlp.ldecoder.distortion.IDistortionModel;
-import org.thunlp.ldecoder.lm.srilm.SRILMWrapper;
+import org.thunlp.lm.srilm.SRILMWrapper;
 
 
 public class MosesPhrasePair implements IPhrasePair {
@@ -23,6 +23,11 @@ public class MosesPhrasePair implements IPhrasePair {
 	float allNgram; //用于计算futureScore，详情见SPBT论文
 	public float futureScore; // = preScore + lmWeight * allNgram；预估的future score
 	//在hypothesis中, score = preScore + reordering score + lmWeigth*(preNgram + headNgram + tailNgram)
+	
+	@Override
+	public String toString() {
+		return sourcePhrase+"|"+targetPhrase+"|"+futureScore;
+	}
 	
 	public void computeTranslationScore() {
 		if(preComputedTrans)
@@ -49,7 +54,7 @@ public class MosesPhrasePair implements IPhrasePair {
 		
 		//这一步可能是有问题的，需要看一下SRILM在前文不足的时候是怎么算的
 		allNgram = preNgram;
-		for(int i = 0; i < lm.getOrder()-1; i++) {
+		for(int i = 0; i < lm.getOrder()-1 && i < words.length; i++) {
 			allNgram += lm.prob(words[i], words, 0, i);
 		}
 		
@@ -74,7 +79,7 @@ public class MosesPhrasePair implements IPhrasePair {
 
 	public MosesPhrasePair(String[] tags) {
 		sourcePhrase = tags[0];
-		sourcePhrase = tags[1];
+		targetPhrase = tags[1];
 		String[] s = tags[2].split(" ");
 		transScores = new float[s.length];
 		for(int i = 0; i < s.length; i++)

@@ -6,7 +6,7 @@
  * the SWIG interface file instead.
  * ----------------------------------------------------------------------------- */
 
-package org.thunlp.ldecoder.lm.srilm;
+package org.thunlp.lm.srilm;
 
 public class SRILM {
   public static SWIGTYPE_p_unsigned_int new_unsigned_array(int nelements) {

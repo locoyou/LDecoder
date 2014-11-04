@@ -7,11 +7,11 @@ import java.util.HashMap;
 
 import org.thunlp.ldecoder.config.Config;
 import org.thunlp.ldecoder.distortion.IDistortionModel;
-import org.thunlp.ldecoder.lm.srilm.SRILMWrapper;
 import org.thunlp.ldecoder.phrasetable.IPhrasePair;
 import org.thunlp.ldecoder.phrasetable.IPhraseTable;
 import org.thunlp.ldecoder.phrasetable.MosesPhrasePair;
 import org.thunlp.ldecoder.phrasetable.MosesPhraseTable;
+import org.thunlp.lm.srilm.SRILMWrapper;
 
 public class MosesTranslationOptionCollector {
 
@@ -184,7 +184,7 @@ public class MosesTranslationOptionCollector {
 		}
 		
 		ArrayList<IPhrasePair> phrasePairs = phraseTable.getPhraseRules(sourcePhrase);
-		if(phrasePairs.size() == 0)
+		if(phrasePairs == null)
 			return;
 		
 		ArrayList<MosesTranslationOption> options = new ArrayList<MosesTranslationOption>();
