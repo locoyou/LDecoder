@@ -5,12 +5,14 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.zip.GZIPInputStream;
 
 
 public class MosesPhraseTable implements IPhraseTable{
 
 	HashMap<String, ArrayList<IPhrasePair>> phraseTable = new HashMap<String, ArrayList<IPhrasePair>>();
+	public HashSet<String> vocabulary = new HashSet<String>();
 	
 	@Override
 	public void loadTable(String phraseTableFileName) {
@@ -31,6 +33,9 @@ public class MosesPhraseTable implements IPhraseTable{
 					phraseTable.put(tags[0], list);
 				}
 				list.add(new MosesPhrasePair(tags));
+				String[] words = tags[0].split(" ");
+				for(String word : words)
+					vocabulary.add(word);
 			}
 			br.close();
 		}
@@ -42,6 +47,15 @@ public class MosesPhraseTable implements IPhraseTable{
 	@Override
 	public ArrayList<IPhrasePair> getPhraseRules(String sourcePhrase) {
 		return phraseTable.get(sourcePhrase);
+	}
+
+	public void addOOVPair(MosesPhrasePair mosesPair) {
+		ArrayList<IPhrasePair> list = new ArrayList<IPhrasePair>();
+		list.add(mosesPair);
+		
+		vocabulary.add(mosesPair.sourcePhrase);
+		phraseTable.put(mosesPair.sourcePhrase, list);
+		
 	}
 
 }
