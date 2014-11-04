@@ -64,4 +64,15 @@ public class MosesMSDDistortionModel implements IDistortionModel {
 			return msdScores[DIS];
 		}
 	}
+
+	@Override
+	public float[] getDistortionScores(String sourcePhrase) {
+		float[] scores = new float[3];
+		MSDDistribution distribution = reorderingTable.get(sourcePhrase);
+		if(distribution != null) {
+			for(int i = 0; i < 3; i++)
+				scores[i] = distribution.get(i);
+		}
+		return scores;
+	}
 }

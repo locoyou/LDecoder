@@ -1,5 +1,7 @@
 package org.thunlp.ldecoder.decoder;
 
+import java.util.ArrayList;
+
 import org.thunlp.ldecoder.config.Config;
 import org.thunlp.ldecoder.distortion.IDistortionModel;
 import org.thunlp.ldecoder.distortion.MosesMSDDistortionModel;
@@ -11,7 +13,15 @@ public class MosesDecoder implements IDecoder {
 	IPhraseTable phraseTable;
 	IDistortionModel distortionModel;
 	SRILMWrapper lm;
+	String sourceSentence;
+	String[] sourceSentenceWords;
+	int sourceSentenceLength;
 	
+	/**
+	 * 读入配置文件
+	 * 载入语言模型、翻译模型、调序模型
+	 * @param configFileName
+	 */
 	public MosesDecoder(String configFileName) {
 		Config.config(configFileName);
 		phraseTable = new MosesPhraseTable();
@@ -21,19 +31,47 @@ public class MosesDecoder implements IDecoder {
 		lm = new SRILMWrapper(Config.lmModel, Config.ngramOrder);		
 	}
 	
+	/**
+	 * 翻译一句话
+	 */
 	@Override
-	public String decode(String sourceSentence) {
+	public void decode(String sourceSentence) {
+		this.sourceSentence = sourceSentence;
+		this.sourceSentenceWords = sourceSentence.split(" ");
+		this.sourceSentenceLength = this.sourceSentenceWords.length;
+		
 		//Create translation options
 		MosesTranslationOptionCollector collector = new MosesTranslationOptionCollector(sourceSentence,
 				phraseTable, distortionModel, lm);
 		collector.createOptions();
 		
-		//TODO decode
+		//TODO search
+		MosesCubeSearch search = new MosesCubeSearch();
+		search.search();
+	}
+
+	
+	/**
+	 * 返回最佳结果
+	 * @return
+	 */
+	@Override
+	public String getBest() {
+		
+		return "";
+	}
+	
+	/**
+	 * 搜索graph，得到nbest结果
+	 * @return nbest list
+	 */
+	@Override
+	public ArrayList<String> getNbest() {
 		
 		return null;
 	}
-
+	
 	public static void main(String[] args) {
-		//TODO
+		//for test
 	}
 }

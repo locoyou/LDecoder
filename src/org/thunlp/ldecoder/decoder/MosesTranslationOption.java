@@ -15,8 +15,7 @@ public class MosesTranslationOption implements ITranslationOption {
 	}
 	
 	public void cacheLexDistortion() {
-		// TODO Auto-generated method stub
-		
+		phrasePair.cacheLexDistortion();
 	}
 
 	public void computeFutureScore() {

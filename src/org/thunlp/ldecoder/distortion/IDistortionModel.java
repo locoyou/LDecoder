@@ -10,4 +10,5 @@ public interface IDistortionModel {
 	 * @return scores 调序分数，可能有多维，如MSD模型会返回3个值，其中两个为0
 	 */
 	public float[] getDistortionScores(String sourcePhrase, int DIS);
+	public float[] getDistortionScores(String sourcePhrase);
 }

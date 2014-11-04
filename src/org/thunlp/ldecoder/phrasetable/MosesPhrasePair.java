@@ -1,6 +1,7 @@
 package org.thunlp.ldecoder.phrasetable;
 
 import org.thunlp.ldecoder.config.Config;
+import org.thunlp.ldecoder.distortion.IDistortionModel;
 import org.thunlp.ldecoder.lm.srilm.SRILMWrapper;
 
 
@@ -14,11 +15,13 @@ public class MosesPhrasePair implements IPhrasePair {
 	boolean preComputedLM = false;
 	boolean computedFuture = false;
 	SRILMWrapper lm;
+	IDistortionModel distortionModel;
+	boolean isOOV = false;
 	
 	float preScore; //预算的分数，在moses中只有translation model的分数预先计算
 	float preNgram; //如果目标语言短语长度比ngram的阶数大，那么后面一部分的ngram分数可以预先计算。这里没有乘以LM的权重
 	float allNgram; //用于计算futureScore，详情见SPBT论文
-	float futureScore; // = preScore + lmWeight * allNgram；预估的future score
+	public float futureScore; // = preScore + lmWeight * allNgram；预估的future score
 	//在hypothesis中, score = preScore + reordering score + lmWeigth*(preNgram + headNgram + tailNgram)
 	
 	public void computeTranslationScore() {
@@ -94,24 +97,34 @@ public class MosesPhrasePair implements IPhrasePair {
 			System.err.println("not OOV");
 			return;
 		}
-			
+		
+		this.isOOV = isOOV;
 		this.sourcePhrase = sourcePhrase;
 		this.targetPhrase = sourcePhrase;
 		transScores = new float[scoreLength];
 		for(int i = 0; i < scoreLength; i++)
 			transScores[i] = 0;
 		futureScore = -100; //OOV
-		preScore = 0;
+		preScore = -100; //OOV
 		preNgram = 0;
+		allNgram = 0;
 		wordAlignStr = "0-0";
-		distortionScores = new float[3];
+
 		preComputedTrans = false;
 		cacheDistortion = false;
 		preComputedLM = false;
 		computedFuture = false;
 	}
 
-	public void setLM(SRILMWrapper lm) {
+	public void setLMAndDistortion(SRILMWrapper lm, IDistortionModel distortionModel) {
 		this.lm = lm;
+		this.distortionModel = distortionModel;
+	}
+
+	public void cacheLexDistortion() {
+		if(cacheDistortion)
+			return;
+		distortionScores = distortionModel.getDistortionScores(sourcePhrase);
+		cacheDistortion = true;
 	}
 }

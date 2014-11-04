@@ -1,6 +1,8 @@
 package org.thunlp.ldecoder.decoder;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.thunlp.ldecoder.config.Config;
@@ -21,6 +23,7 @@ public class MosesTranslationOptionCollector {
 	int sourceSentenceLength;
 	HashMap<Integer, ArrayList<MosesTranslationOption>> translationOptions;
 	float[] futureScoreTable;
+	OptionComparator comparator = new OptionComparator();
 	
 	public MosesTranslationOptionCollector(String sourceSentence, IPhraseTable phraseTable,
 			IDistortionModel distortionModel,
@@ -32,6 +35,17 @@ public class MosesTranslationOptionCollector {
 		this.sourceSentenceWords = sourceSentence.split(" ");
 		this.sourceSentenceLength = sourceSentenceWords.length;
 		translationOptions = new HashMap<Integer, ArrayList<MosesTranslationOption>>();
+	}
+	
+	class OptionComparator implements Comparator<MosesTranslationOption> {
+		@Override
+		public int compare(MosesTranslationOption arg0, MosesTranslationOption arg1) {
+			if(arg1.phrasePair.futureScore > arg0.phrasePair.futureScore)
+				return 1;
+			else
+				return -1;
+		}
+		
 	}
 	
 	public void createOptions() {
@@ -68,8 +82,15 @@ public class MosesTranslationOptionCollector {
 	 * 对剪枝后保留下来的每个translation option，先从调序模型里读取MSD的分数，预先存在translation option里
 	 */
 	private void cacheLexDistortion() {
-		// TODO Auto-generated method stub
-		
+		for(int i = 0; i < sourceSentenceLength; i++) {
+			for(int j = i; j < sourceSentenceLength && j < i+Config.phraseMaxLength; j++) {
+				ArrayList<MosesTranslationOption> list = translationOptions.get(i);
+				if(list != null) {
+					for(MosesTranslationOption o : list)
+						o.cacheLexDistortion();
+				}
+			}
+		}
 	}
 
 	/**
@@ -78,8 +99,29 @@ public class MosesTranslationOptionCollector {
 	 * 然后用动态规划计算出所有区间的最大future score
 	 */
 	private void calcFutureScore() {
-		// TODO Auto-generated method stub
+		futureScoreTable = new float[sourceSentenceLength*sourceSentenceLength];
 		
+		for(int i = 0; i < sourceSentenceLength*sourceSentenceLength; i++) {
+			ArrayList<MosesTranslationOption> list = translationOptions.get(i);
+			if(list != null)
+				futureScoreTable[i] = list.get(0).phrasePair.futureScore;
+			else
+				futureScoreTable[i] = -10000;
+		}
+		
+		for(int colstart = 1; colstart < sourceSentenceLength; colstart++) {
+			for(int shift = 0; shift < sourceSentenceLength-colstart; shift++) {
+				int beginIndex = shift;
+				int endIndex = colstart+shift;
+				for(int joinAt = beginIndex; joinAt < endIndex; joinAt++) {
+					float joinedScore = futureScoreTable[beginIndex*sourceSentenceLength+joinAt] +
+							futureScoreTable[joinAt*sourceSentenceLength+endIndex];
+					if(joinedScore > futureScoreTable[beginIndex*sourceSentenceLength+endIndex])
+						futureScoreTable[beginIndex*sourceSentenceLength+endIndex] = joinedScore;
+				}
+
+			}
+		}
 	}
 
 	/**
@@ -89,7 +131,7 @@ public class MosesTranslationOptionCollector {
 		for(int i = 0; i < sourceSentenceLength*sourceSentenceLength; i++) {
 			ArrayList<MosesTranslationOption> list = translationOptions.get(i);
 			if(list != null) {
-				//TODO sort
+				Collections.sort(list, comparator);
 			}
 		}
 	}
@@ -113,7 +155,7 @@ public class MosesTranslationOptionCollector {
 		for(int i = 0; i < sourceSentenceLength; i++) {
 			if(!phraseTable.vocabulary.contains(sourceSentenceWords[i])) {
 				MosesPhrasePair mosesPair = new MosesPhrasePair(sourceSentenceWords[i], true, Config.translationWeights.length);
-				mosesPair.setLM(lm);
+				mosesPair.setLMAndDistortion(lm, distortionModel);
 				MosesTranslationOption option = new MosesTranslationOption();
 				option.beginIndex = i;
 				option.endIndex = i;
@@ -149,7 +191,7 @@ public class MosesTranslationOptionCollector {
 		
 		for(IPhrasePair pair : phrasePairs) {
 			MosesPhrasePair mosesPair = (MosesPhrasePair)pair;
-			mosesPair.setLM(lm);
+			mosesPair.setLMAndDistortion(lm, distortionModel);
 			MosesTranslationOption option = new MosesTranslationOption();
 			option.beginIndex = beginIndex;
 			option.endIndex = endIndex;
