@@ -24,6 +24,7 @@ public class MosesTranslationOptionCollector {
 	HashMap<Integer, ArrayList<MosesTranslationOption>> translationOptions;
 	float[] futureScoreTable;
 	OptionComparator comparator = new OptionComparator();
+	HashMap<Integer, Float> bitmapFutureScore = new HashMap<Integer, Float>();
 	
 	public MosesTranslationOptionCollector(String sourceSentence, IPhraseTable phraseTable,
 			IDistortionModel distortionModel,
@@ -115,7 +116,7 @@ public class MosesTranslationOptionCollector {
 				int endIndex = colstart+shift;
 				for(int joinAt = beginIndex; joinAt < endIndex; joinAt++) {
 					float joinedScore = futureScoreTable[beginIndex*sourceSentenceLength+joinAt] +
-							futureScoreTable[joinAt*sourceSentenceLength+endIndex];
+							futureScoreTable[(joinAt+1)*sourceSentenceLength+endIndex];
 					if(joinedScore > futureScoreTable[beginIndex*sourceSentenceLength+endIndex])
 						futureScoreTable[beginIndex*sourceSentenceLength+endIndex] = joinedScore;
 				}

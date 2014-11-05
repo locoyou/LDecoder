@@ -16,6 +16,7 @@ public class MosesDecoder implements IDecoder {
 	String sourceSentence;
 	String[] sourceSentenceWords;
 	int sourceSentenceLength;
+	MosesCubeSearch searcher;
 	
 	/**
 	 * 读入配置文件
@@ -57,8 +58,8 @@ public class MosesDecoder implements IDecoder {
 		*/
 		
 		//通过cube search生成search graph
-		MosesCubeSearch search = new MosesCubeSearch(phraseTable, distortionModel, lm, collector);
-		search.search();
+		searcher = new MosesCubeSearch(phraseTable, distortionModel, lm, collector);
+		searcher.search();
 	}
 
 	
@@ -68,8 +69,18 @@ public class MosesDecoder implements IDecoder {
 	 */
 	@Override
 	public String getBest() {
-		//TODO
-		return "";
+		MosesHypothesis bestHyp = searcher.stacks.get(searcher.stacks.size()-1).get(0);
+		if(bestHyp == null)
+			return "";
+		else {
+			String translation = "";
+			MosesHypothesis hyp = bestHyp;
+			while(hyp != null) {
+				translation = hyp.option.phrasePair.targetPhrase + " " + translation;
+				hyp = hyp.lastHyp;
+			}
+			return translation + " "+ bestHyp.score;
+		}
 	}
 	
 	/**
@@ -85,6 +96,9 @@ public class MosesDecoder implements IDecoder {
 	public static void main(String[] args) {
 		//for test
 		MosesDecoder decoder = new MosesDecoder("");
+		long start = System.currentTimeMillis();
 		decoder.decode("美国 总统 访问 中国");
+		System.out.println(decoder.getBest());
+		System.out.println((System.currentTimeMillis()-start)/1000);
 	}
 }

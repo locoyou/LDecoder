@@ -6,20 +6,21 @@ import org.thunlp.lm.srilm.SRILMWrapper;
 
 
 public class MosesPhrasePair implements IPhrasePair {
-	String sourcePhrase, targetPhrase;
-	float[] transScores; //翻译模型的各个分数（log probability）
+	public String sourcePhrase, targetPhrase;
+	public float[] transScores; //翻译模型的各个分数（log probability）
 	String wordAlignStr, freqStr;
 	boolean preComputedTrans = false;
-	float[] distortionScores;
+	public float[] distortionScores;
 	boolean cacheDistortion = false;
 	boolean preComputedLM = false;
 	boolean computedFuture = false;
 	SRILMWrapper lm;
 	IDistortionModel distortionModel;
-	boolean isOOV = false;
+	public boolean isOOV = false;
+	public int targetPhraseLength;
 	
-	float preScore; //预算的分数，在moses中只有translation model的分数预先计算
-	float preNgram; //如果目标语言短语长度比ngram的阶数大，那么后面一部分的ngram分数可以预先计算。这里没有乘以LM的权重
+	public float preScore; //预算的分数，在moses中只有translation model的分数预先计算
+	public float preNgram; //如果目标语言短语长度比ngram的阶数大，那么后面一部分的ngram分数可以预先计算。这里没有乘以LM的权重
 	float allNgram; //用于计算futureScore，详情见SPBT论文
 	public float futureScore; // = preScore + lmWeight * allNgram；预估的future score
 	//在hypothesis中, score = preScore + reordering score + lmWeigth*(preNgram + headNgram + tailNgram)
@@ -80,6 +81,7 @@ public class MosesPhrasePair implements IPhrasePair {
 	public MosesPhrasePair(String[] tags) {
 		sourcePhrase = tags[0];
 		targetPhrase = tags[1];
+		targetPhraseLength = targetPhrase.split(" ").length;
 		String[] s = tags[2].split(" ");
 		transScores = new float[s.length];
 		for(int i = 0; i < s.length; i++)
