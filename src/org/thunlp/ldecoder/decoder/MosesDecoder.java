@@ -56,8 +56,8 @@ public class MosesDecoder implements IDecoder {
 		}
 		*/
 		
-		//TODO search
-		MosesCubeSearch search = new MosesCubeSearch();
+		//通过cube search生成search graph
+		MosesCubeSearch search = new MosesCubeSearch(phraseTable, distortionModel, lm, collector);
 		search.search();
 	}
 
@@ -68,7 +68,7 @@ public class MosesDecoder implements IDecoder {
 	 */
 	@Override
 	public String getBest() {
-		
+		//TODO
 		return "";
 	}
 	
@@ -78,7 +78,7 @@ public class MosesDecoder implements IDecoder {
 	 */
 	@Override
 	public ArrayList<String> getNbest() {
-		
+		//TODO
 		return null;
 	}
 	

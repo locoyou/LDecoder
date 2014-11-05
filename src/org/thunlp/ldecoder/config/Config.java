@@ -21,6 +21,8 @@ public class Config {
 	
 	public static int phraseMaxLength = 7;
 	
+	public static int scoreNum = 5+3+1+1+1+1; //translation model, msd, distance, lm, length, oov 
+	
 	public static void config(String configFileName) {
 		//TODO
 	}
