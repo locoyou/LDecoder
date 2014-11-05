@@ -83,6 +83,7 @@ public class MosesHypothesis {
 			k = 0;
 		else if(option.beginIndex - lastHyp.option.endIndex == -1) //s
 			k = 1;
+		
 		scores[index+k] = option.phrasePair.distortionScores[k];
 		transition += Config.distortionWeights[k]*scores[index+k];
 		index += 3;
@@ -147,7 +148,7 @@ public class MosesHypothesis {
 				}
 				else{
 					endIndex = startIndex;
-					while(!bitmap[endIndex])
+					while(endIndex < bitmap.length && !bitmap[endIndex])
 						endIndex++;
 					futureScore += collector.futureScoreTable[startIndex*collector.sourceSentenceLength+endIndex-1];
 					startIndex = endIndex;

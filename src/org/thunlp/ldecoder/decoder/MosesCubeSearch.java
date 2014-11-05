@@ -29,6 +29,7 @@ public class MosesCubeSearch {
 	 */
 
 	public void search() {
+		recombinedList = new ArrayList<ArrayList<MosesHypothesis>>();
 		int length = collector.sourceSentenceLength;
 		stacks = new ArrayList<ArrayList<MosesHypothesis>>(length+1); //stack的id从0到n，第0个里仅有初始hyp0
 		for(int i = 0; i <= length; i++) {
@@ -44,6 +45,7 @@ public class MosesCubeSearch {
 		//从第0到第n-1个stack，通过当前stack中的hyp，再翻译一个短语生成新的hyp，加入对应stack中
 		for(int stackId = 0; stackId < length; stackId++) {
 			ArrayList<MosesHypothesis> stack = stacks.get(stackId);
+			//System.out.println("processing stack "+stackId+" . There are "+stack.size()+" hyps");
 			//遍历stack中的hyp，加上一个option来生成新的hyp
 			for(int x = 0; x < stack.size() && x < Config.stackSize; x++) {
 				MosesHypothesis hyp = stack.get(x);
@@ -53,13 +55,18 @@ public class MosesCubeSearch {
 				for(int startIndex = Math.max(0, hyp.option.beginIndex-Config.distortionLimit); 
 						startIndex < Math.min(length, hyp.option.beginIndex+Config.distortionLimit); startIndex++) {
 					int endIndex = startIndex;
-					while(!bitmap[endIndex] && endIndex-startIndex < Config.phraseMaxLength && endIndex < length) {
+					while(endIndex < length && !bitmap[endIndex] && endIndex-startIndex < Config.phraseMaxLength && endIndex < length) {
 						ArrayList<MosesTranslationOption> l = collector.translationOptions.get(startIndex*length+endIndex);
-						if(l != null)
+						if(l != null) {
+							//System.out.println("from "+startIndex+" "+endIndex+" get "+l.size()+" options");
+							//System.out.println("such as "+l.get(0).phrasePair.toString());
 							optionList.addAll(l);
+						}
+						endIndex++;
 					}
 				}
 				//2 选取一个option，生成新的hyp
+
 				for(MosesTranslationOption op : optionList) {
 					MosesHypothesis newHyp = new MosesHypothesis(hypId++);
 					newHyp.buildFromLastHyp(hyp, op, collector);
@@ -117,8 +124,11 @@ public class MosesCubeSearch {
 					
 					if(insertIndex == -1)
 						insertIndex = nextStack.size();
-					if(insertIndex >= 0)
+					if(insertIndex >= 0) {
 						nextStack.add(insertIndex, newHyp);
+						if(nextStack.size() == Config.stackSize)
+							nextStack.remove(nextStack.size()-1);
+					}
 					
 				}
 				

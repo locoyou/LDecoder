@@ -85,7 +85,7 @@ public class MosesTranslationOptionCollector {
 	private void cacheLexDistortion() {
 		for(int i = 0; i < sourceSentenceLength; i++) {
 			for(int j = i; j < sourceSentenceLength && j < i+Config.phraseMaxLength; j++) {
-				ArrayList<MosesTranslationOption> list = translationOptions.get(i);
+				ArrayList<MosesTranslationOption> list = translationOptions.get(i*sourceSentenceLength+j);
 				if(list != null) {
 					for(MosesTranslationOption o : list)
 						o.cacheLexDistortion();

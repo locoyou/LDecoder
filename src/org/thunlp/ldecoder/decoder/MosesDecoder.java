@@ -75,7 +75,7 @@ public class MosesDecoder implements IDecoder {
 		else {
 			String translation = "";
 			MosesHypothesis hyp = bestHyp;
-			while(hyp != null) {
+			while(hyp.lastHyp != null) {
 				translation = hyp.option.phrasePair.targetPhrase + " " + translation;
 				hyp = hyp.lastHyp;
 			}
@@ -99,6 +99,6 @@ public class MosesDecoder implements IDecoder {
 		long start = System.currentTimeMillis();
 		decoder.decode("美国 总统 访问 中国");
 		System.out.println(decoder.getBest());
-		System.out.println((System.currentTimeMillis()-start)/1000);
+		System.out.println(System.currentTimeMillis()-start);
 	}
 }

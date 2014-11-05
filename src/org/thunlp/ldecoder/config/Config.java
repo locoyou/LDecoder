@@ -13,13 +13,13 @@ public class Config {
 	public static float lmWeight=0.1f;
 	
 	public static int distortionLimit = 6;
-	public static int stackSize = 1000;
-	public static int phraseLimit = 20;
+	public static int stackSize = 50;
+	public static int phraseLimit = 5;
 	
-	public static int ngramOrder = 4;
-	public static String lmModel = "/home/liucy/moses/test/model/xinhua.low.4.lm";
+	public static int ngramOrder = 3;
+	public static String lmModel = "/home/liucy/tools/srilm-java-wrapper/test-data/lm.3.arpa";
 	
-	public static int phraseMaxLength = 7;
+	public static int phraseMaxLength = 4;
 	
 	public static int scoreNum = 5+3+1+1+1+1; //translation model, msd, distance, lm, length, oov 
 	
