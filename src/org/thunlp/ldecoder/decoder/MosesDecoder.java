@@ -88,9 +88,8 @@ public class MosesDecoder implements IDecoder {
 	 * @return nbest list
 	 */
 	@Override
-	public ArrayList<String> getNbest() {
-		//TODO
-		return null;
+	public ArrayList<String> getNbest(int n) {
+		return searcher.getNbest(n);
 	}
 	
 	public static void main(String[] args) {
@@ -99,6 +98,9 @@ public class MosesDecoder implements IDecoder {
 		long start = System.currentTimeMillis();
 		decoder.decode("美国 总统 访问 中国");
 		System.out.println(decoder.getBest());
+		ArrayList<String> nbest = decoder.getNbest(5);
+		for(String s : nbest)
+			System.out.println(s);
 		System.out.println(System.currentTimeMillis()-start);
 	}
 }

@@ -1,6 +1,8 @@
 package org.thunlp.ldecoder.decoder;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 import org.thunlp.ldecoder.config.Config;
 import org.thunlp.ldecoder.distortion.IDistortionModel;
@@ -27,7 +29,6 @@ public class MosesCubeSearch {
 	/**
 	 * 实现search算法，生成Search Graph
 	 */
-
 	public void search() {
 		recombinedList = new ArrayList<ArrayList<MosesHypothesis>>();
 		int length = collector.sourceSentenceLength;
@@ -136,4 +137,77 @@ public class MosesCubeSearch {
 		}//遍历stack
 	}
 	
+	/**
+	 * 根据search graph得到nbest
+	 * @return
+	 */
+	public ArrayList<String> getNbest(int n) {
+		ArrayList<String> nbest = new ArrayList<String>();
+		Comparator<Path> OrderIsdn =  new Comparator<Path>(){
+			public int compare(Path p1, Path p2) {
+				if(p2.score > p1.score)
+					return 1;
+				else
+					return -1;
+			}
+		};
+		
+		PriorityQueue<Path> paths = new PriorityQueue<Path>(n, OrderIsdn);
+		
+		//将最终stack中的hyp生成路径加入
+		for(MosesHypothesis hyp : stacks.get(stacks.size()-1)) {
+			Path p = new Path();
+			MosesHypothesis current = hyp;
+			p.score = hyp.score;
+			p.scores = new float[hyp.scores.length];
+			while(current.lastHyp != null) {
+				p.hypPath.add(current);
+				p.translation = current.option.phrasePair.targetPhrase+ " " + p.translation;
+				p.lastChange = 0;
+				for(int i = 0; i < p.scores.length; i++)
+					p.scores[i] += current.scores[i];
+				current = current.lastHyp;
+			}
+			p.translation += " ||| "+p.score;
+			paths.add(p);
+		}
+		
+		//System.out.println("get nbest");
+		while(nbest.size() < n && !paths.isEmpty()) {
+			Path bestPath = paths.poll();
+			nbest.add(bestPath.translation);
+			for(int i = bestPath.lastChange; i < bestPath.hypPath.size(); i++) {
+				MosesHypothesis current = bestPath.hypPath.get(i);
+				if(current.recombinedListId >= 0 && recombinedList.get(current.recombinedListId).size() > 0) {
+					for(MosesHypothesis h : recombinedList.get(current.recombinedListId)) {
+						Path newPath = new Path();
+						newPath.score = bestPath.score - current.score + h.score;
+						newPath.scores = new float[h.scores.length];
+						for(int x = 0; x < h.scores.length; x++) {
+							newPath.scores[x] = bestPath.scores[x] - current.scores[x] + h.scores[x];
+						}
+						newPath.lastChange = i+1;
+						newPath.hypPath.addAll(bestPath.hypPath);
+						newPath.hypPath.remove(i);
+						newPath.hypPath.add(i, h);
+						for(MosesHypothesis nh : newPath.hypPath) {
+							newPath.translation = nh.option.phrasePair.targetPhrase + " " + newPath.translation;
+						}
+						newPath.translation += " ||| "+newPath.score;
+						paths.add(newPath);
+					}
+				}
+			}
+		}
+		
+		return nbest;
+	}
+	
+	class Path {
+		ArrayList<MosesHypothesis> hypPath = new ArrayList<MosesHypothesis>();
+		String translation="";
+		int lastChange;
+		float[] scores;
+		float score = 0;
+	}
 }
