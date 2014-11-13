@@ -89,7 +89,7 @@ public class MosesHypothesis {
 		index += 3;
 		
 		//3. distance
-		scores[index] = -Math.abs(option.beginIndex - lastHyp.option.beginIndex);
+		scores[index] = -Math.abs(option.beginIndex - lastHyp.option.endIndex-1);
 		transition += Config.distantWeight * scores[index];
 		index ++;
 		
@@ -120,6 +120,9 @@ public class MosesHypothesis {
 		}
 		
 		scores[index] = lmScore + option.phrasePair.preNgram;
+//		if(option.phrasePair.targetPhrase.equals("of new technology")) {
+//			System.out.println(option.phrasePair.preNgram);
+//		}
 		transition += Config.lmWeight * scores[index];
 		index++;
 		

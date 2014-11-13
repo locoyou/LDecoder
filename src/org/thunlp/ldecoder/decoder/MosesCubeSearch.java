@@ -53,17 +53,24 @@ public class MosesCubeSearch {
 				//1 根据bitmap，获取可行的option列表
 				boolean[] bitmap = hyp.bitmap; //通过bitmap，找出可用的option的range(startIndex, endIndex)
 				ArrayList<MosesTranslationOption> optionList = new ArrayList<MosesTranslationOption>();
-				for(int startIndex = Math.max(0, hyp.option.beginIndex-Config.distortionLimit); 
-						startIndex < Math.min(length, hyp.option.beginIndex+Config.distortionLimit); startIndex++) {
-					int endIndex = startIndex;
-					while(endIndex < length && !bitmap[endIndex] && endIndex-startIndex < Config.phraseMaxLength && endIndex < length) {
-						ArrayList<MosesTranslationOption> l = collector.translationOptions.get(startIndex*length+endIndex);
-						if(l != null) {
-							//System.out.println("from "+startIndex+" "+endIndex+" get "+l.size()+" options");
-							//System.out.println("such as "+l.get(0).phrasePair.toString());
-							optionList.addAll(l);
+				int t = hyp.option.endIndex+1;
+				if(collector.translationOptions.get(t*length+t) != null && collector.translationOptions.get(t*length+t).get(0).phrasePair.isOOV) {
+					ArrayList<MosesTranslationOption> l = collector.translationOptions.get(t*length+t);
+					optionList.addAll(l);
+				}
+				else {
+					for(int startIndex = Math.max(0, hyp.option.beginIndex-Config.distortionLimit); 
+							startIndex < Math.min(length, hyp.option.beginIndex+Config.distortionLimit); startIndex++) {
+						int endIndex = startIndex;
+						while(endIndex < length && !bitmap[endIndex] && endIndex-startIndex < Config.phraseMaxLength && endIndex < length) {
+							ArrayList<MosesTranslationOption> l = collector.translationOptions.get(startIndex*length+endIndex);
+							if(l != null) {
+								//System.out.println("from "+startIndex+" "+endIndex+" get "+l.size()+" options");
+								//System.out.println("such as "+l.get(0).phrasePair.toString());
+								optionList.addAll(l);
+							}
+							endIndex++;
 						}
-						endIndex++;
 					}
 				}
 				//2 选取一个option，生成新的hyp
@@ -168,7 +175,10 @@ public class MosesCubeSearch {
 					p.scores[i] += current.scores[i];
 				current = current.lastHyp;
 			}
-			p.translation += " ||| "+p.score;
+			String s = "";
+			for(int i = 0; i < p.scores.length; i++)
+				s += p.scores[i]+" ";
+			p.translation += " ||| "+s+"||| "+p.score;
 			paths.add(p);
 		}
 		
@@ -181,19 +191,36 @@ public class MosesCubeSearch {
 				if(current.recombinedListId >= 0 && recombinedList.get(current.recombinedListId).size() > 0) {
 					for(MosesHypothesis h : recombinedList.get(current.recombinedListId)) {
 						Path newPath = new Path();
-						newPath.score = bestPath.score - current.score + h.score;
-						newPath.scores = new float[h.scores.length];
-						for(int x = 0; x < h.scores.length; x++) {
-							newPath.scores[x] = bestPath.scores[x] - current.scores[x] + h.scores[x];
+						for(int j = 0; j < i; j++) {
+							newPath.hypPath.add(bestPath.hypPath.get(j));
 						}
+						newPath.hypPath.add(h);
+						MosesHypothesis hx = h.lastHyp;
+						while(hx.lastHyp != null) {
+							newPath.hypPath.add(hx);
+							hx = hx.lastHyp;
+						}
+						//newPath.score = bestPath.score - current.score + h.score;
+						newPath.scores = new float[h.scores.length];
+						//for(int x = 0; x < h.scores.length; x++) {
+							//newPath.scores[x] = bestPath.scores[x] - current.scores[x] + h.scores[x];
+						//}
 						newPath.lastChange = i+1;
-						newPath.hypPath.addAll(bestPath.hypPath);
-						newPath.hypPath.remove(i);
-						newPath.hypPath.add(i, h);
+						//newPath.hypPath.addAll(bestPath.hypPath);
+						//newPath.hypPath.remove(i);
+						//newPath.hypPath.add(i, h);
 						for(MosesHypothesis nh : newPath.hypPath) {
+							newPath.score += nh.transition;
+							for(int x = 0; x < h.scores.length; x++) {
+								newPath.scores[x] += nh.scores[x];
+							}
 							newPath.translation = nh.option.phrasePair.targetPhrase + " " + newPath.translation;
 						}
-						newPath.translation += " ||| "+newPath.score;
+						String s = "";
+						for(int x = 0; x < h.scores.length; x++) {
+							s += newPath.scores[x] + " ";
+						}
+						newPath.translation += " ||| "+s+"||| "+newPath.score;
 						paths.add(newPath);
 					}
 				}

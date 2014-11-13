@@ -73,13 +73,19 @@ public class MosesDecoder implements IDecoder {
 		if(bestHyp == null)
 			return "";
 		else {
+			float[] score = new float[Config.scoreNum];
 			String translation = "";
 			MosesHypothesis hyp = bestHyp;
 			while(hyp.lastHyp != null) {
 				translation = hyp.option.phrasePair.targetPhrase + " " + translation;
+				for(int i = 0; i < score.length; i++)
+					score[i] += hyp.scores[i];
 				hyp = hyp.lastHyp;
 			}
-			return translation + " "+ bestHyp.score;
+			String s = "";
+			for(int i = 0; i < score.length; i++)
+				s += score[i]+" ";
+			return translation + " ||| "+s+"||| "+ bestHyp.score;
 		}
 	}
 	
@@ -96,11 +102,17 @@ public class MosesDecoder implements IDecoder {
 		//for test
 		MosesDecoder decoder = new MosesDecoder("");
 		long start = System.currentTimeMillis();
-		decoder.decode("美国 总统 访问 中国");
-		System.out.println(decoder.getBest());
-		ArrayList<String> nbest = decoder.getNbest(5);
+		decoder.decode("今年 前 两 月 广东 高 新 技术 产品 出口 37.6亿 美元");
+		//System.out.println(decoder.getBest());
+		ArrayList<String> nbest = decoder.getNbest(30);
+		System.out.println(System.currentTimeMillis()-start);
 		for(String s : nbest)
 			System.out.println(s);
-		System.out.println(System.currentTimeMillis()-start);
+		
+		for(MosesHypothesis h : decoder.searcher.stacks.get(3)) {
+			if(h.lastHyp.hypid == 90) {
+				System.out.println(h.hypid+"|"+h.option.phrasePair.sourcePhrase+"|"+h.option.phrasePair.targetPhrase);
+			}
+		}
 	}
 }

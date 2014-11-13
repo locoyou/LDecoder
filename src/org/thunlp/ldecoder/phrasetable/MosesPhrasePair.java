@@ -1,5 +1,7 @@
 package org.thunlp.ldecoder.phrasetable;
 
+import java.util.ArrayList;
+
 import org.thunlp.ldecoder.config.Config;
 import org.thunlp.ldecoder.distortion.IDistortionModel;
 import org.thunlp.lm.srilm.SRILMWrapper;
@@ -48,7 +50,19 @@ public class MosesPhrasePair implements IPhrasePair {
 		preNgram = 0;
 		allNgram = 0;
 		
-		String[] words = sourcePhrase.split(" ");
+		String[] words = targetPhrase.split(" ");
+		ArrayList<String> context = new ArrayList<String>();
+		for(int i = 0; i < lm.getOrder()-1 && i < words.length; i++) {
+			allNgram +=lm.prob(words[i], context);
+			context.add(words[i]);
+		}
+		for(int i = lm.getOrder()-1; i < words.length; i++) {
+			preNgram +=lm.prob(words[i], context);
+			context.add(words[i]);
+		}
+		
+		allNgram += preNgram;
+		/*
 		for (int i = lm.getOrder()-1; i < words.length; i++) {
 			preNgram += lm.prob(words[i], words, 0, i);
 		}
@@ -58,6 +72,7 @@ public class MosesPhrasePair implements IPhrasePair {
 		for(int i = 0; i < lm.getOrder()-1 && i < words.length; i++) {
 			allNgram += lm.prob(words[i], words, 0, i);
 		}
+		*/
 		
 		preComputedLM = true;
 	}
@@ -108,11 +123,12 @@ public class MosesPhrasePair implements IPhrasePair {
 		this.isOOV = isOOV;
 		this.sourcePhrase = sourcePhrase;
 		this.targetPhrase = sourcePhrase;
+		targetPhraseLength = sourcePhrase.split(" ").length;
 		transScores = new float[scoreLength];
 		for(int i = 0; i < scoreLength; i++)
 			transScores[i] = 0;
 		futureScore = -100; //OOV
-		preScore = -100; //OOV
+		preScore = 0;
 		preNgram = 0;
 		allNgram = 0;
 		wordAlignStr = "0-0";
