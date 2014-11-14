@@ -54,11 +54,13 @@ public class MosesCubeSearch {
 				boolean[] bitmap = hyp.bitmap; //通过bitmap，找出可用的option的range(startIndex, endIndex)
 				ArrayList<MosesTranslationOption> optionList = new ArrayList<MosesTranslationOption>();
 				int t = hyp.option.endIndex+1;
+				//保证OOV的调序是M
 				if(collector.translationOptions.get(t*length+t) != null && collector.translationOptions.get(t*length+t).get(0).phrasePair.isOOV) {
 					ArrayList<MosesTranslationOption> l = collector.translationOptions.get(t*length+t);
 					optionList.addAll(l);
 				}
 				else {
+					//选取可能的options 
 					for(int startIndex = Math.max(0, hyp.option.beginIndex-Config.distortionLimit); 
 							startIndex < Math.min(length, hyp.option.beginIndex+Config.distortionLimit); startIndex++) {
 						int endIndex = startIndex;

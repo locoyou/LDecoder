@@ -18,6 +18,7 @@ public class MosesHypothesis {
 	boolean[] bitmap; //该Hyp已经覆盖的源语言词的bitmap。用来判断是否可以合并hyp
 	int bitmapId; //bitmap的二进制数表示。可以加快判断bitmap是否相同
 	int recombinedListId;
+	ArrayList<MosesHypothesis> nextHyps = new ArrayList<MosesHypothesis>();
 	
 	public MosesHypothesis(int hypid) {
 		this.hypid = hypid;
@@ -164,6 +165,7 @@ public class MosesHypothesis {
 		if(lastHyp.bestNextHyp == null || lastHyp.bestNextHyp.score < this.score) {
 			lastHyp.bestNextHyp = this;
 		}
+		lastHyp.nextHyps.add(this);
 	}
 
 	public boolean canCombine(MosesHypothesis newHyp) {

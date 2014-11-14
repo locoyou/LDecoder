@@ -108,11 +108,12 @@ public class MosesDecoder implements IDecoder {
 		System.out.println(System.currentTimeMillis()-start);
 		for(String s : nbest)
 			System.out.println(s);
-		
+		/*
 		for(MosesHypothesis h : decoder.searcher.stacks.get(3)) {
 			if(h.lastHyp.hypid == 90) {
 				System.out.println(h.hypid+"|"+h.option.phrasePair.sourcePhrase+"|"+h.option.phrasePair.targetPhrase);
 			}
 		}
+		*/
 	}
 }
